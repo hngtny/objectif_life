@@ -7,7 +7,7 @@ LARGEUR, HAUTEUR = 800, 480
 ecran = pygame.display.set_mode((LARGEUR, HAUTEUR))
 horloge = pygame.time.Clock()
 
-GRAVITE = 0.5
+GRAVITE = 0.4
 FORCE_SAUT = -10
 VITESSE = 4
 FORCE_DASH = 12
@@ -35,7 +35,8 @@ class Joueur:
 
     def mettre_a_jour(self, plateformes):
         touches = pygame.key.get_pressed()
-
+        if touches[pygame.K_ESCAPE]:
+            pygame.quit()
         if not self.en_dash:
             self.vitesse_x = 0
 
@@ -127,7 +128,9 @@ plateformes = [
     pygame.Rect(300, 340, 120, 20),
     pygame.Rect(550, 280, 120, 20),
     pygame.Rect(800, 220, 120, 20),
-    pygame.Rect(1000, 260, 20, 200)
+    pygame.Rect(1000, 260, 20, 200),
+    pygame.Rect(1120, 260, 20, 200),
+    pygame.Rect(1000, 260, 120, 20)
 ]
 
 camera = Camera()
