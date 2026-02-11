@@ -7,6 +7,10 @@ LARGEUR, HAUTEUR = 800, 480
 ecran = pygame.display.set_mode((LARGEUR, HAUTEUR))
 horloge = pygame.time.Clock()
 
+logo = pygame.image.load('Images/objectif life logo.png')
+pygame.display.set_icon(logo)
+pygame.display.set_caption('Objectif Life')
+
 GRAVITE = 0.4
 FORCE_SAUT = -10
 VITESSE = 4
