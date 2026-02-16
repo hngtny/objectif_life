@@ -25,6 +25,9 @@ DIRECTIONS_DASH = [
     (-1, 1), (1, 1)
 ]
 
+police = pygame.font.SysFont("arial", 40)
+
+
 class Joueur:
     def __init__(self, x, y):
         self.rectangle = pygame.Rect(x, y, 32, 32)
@@ -39,8 +42,7 @@ class Joueur:
 
     def mettre_a_jour(self, plateformes):
         touches = pygame.key.get_pressed()
-        if touches[pygame.K_ESCAPE]:
-            pygame.quit()
+
         if not self.en_dash:
             self.vitesse_x = 0
 
@@ -89,6 +91,7 @@ class Joueur:
 
         self.rectangle.x += self.vitesse_x
         self.sur_mur = False
+
         for plateforme in plateformes:
             if self.rectangle.colliderect(plateforme):
                 if self.vitesse_x > 0:
@@ -102,6 +105,7 @@ class Joueur:
 
         self.rectangle.y += self.vitesse_y
         self.au_sol = False
+
         for plateforme in plateformes:
             if self.rectangle.colliderect(plateforme):
                 if self.vitesse_y > 0:
@@ -116,6 +120,7 @@ class Joueur:
         if self.sur_mur and self.vitesse_y > 0:
             self.vitesse_y *= GLISSE_MUR
 
+
 class Camera:
     def __init__(self):
         self.decalage_x = 0
@@ -125,18 +130,28 @@ class Camera:
         self.decalage_x = cible.rectangle.centerx - LARGEUR // 2
         self.decalage_y = cible.rectangle.centery - HAUTEUR // 2
 
-joueur = Joueur(100, 300)
 
-plateformes = [
-    pygame.Rect(0, 420, 2000, 60),
-    pygame.Rect(300, 340, 120, 20),
-    pygame.Rect(550, 280, 120, 20),
-    pygame.Rect(800, 220, 120, 20),
-    pygame.Rect(1000, 260, 20, 200),
-    pygame.Rect(1120, 260, 20, 200),
-    pygame.Rect(1000, 260, 120, 20)
-]
+def nouvelle_partie():
+    joueur = Joueur(100, 300)
 
+    plateformes = [
+        pygame.Rect(0, 420, 2000, 60),
+        pygame.Rect(300, 340, 120, 20),
+        pygame.Rect(550, 280, 120, 20),
+        pygame.Rect(800, 220, 120, 20),
+        pygame.Rect(1000, 260, 20, 200),
+        pygame.Rect(1120, 260, 20, 200),
+        pygame.Rect(1000, 260, 120, 20)
+    ]
+
+    return joueur, plateformes
+
+
+etat = "menu"
+selection = 0
+options = ["Nouvelle Partie", "Quitter"]
+
+joueur, plateformes = nouvelle_partie()
 camera = Camera()
 
 en_cours = True
@@ -147,33 +162,60 @@ while en_cours:
         if evenement.type == pygame.QUIT:
             en_cours = False
 
-    joueur.mettre_a_jour(plateformes)
-    camera.mettre_a_jour(joueur)
+        if etat == "menu":
+            if evenement.type == pygame.KEYDOWN:
+                if evenement.key == pygame.K_UP:
+                    selection = (selection - 1) % len(options)
+                if evenement.key == pygame.K_DOWN:
+                    selection = (selection + 1) % len(options)
+                if evenement.key == pygame.K_RETURN:
+                    if selection == 0:
+                        joueur, plateformes = nouvelle_partie()
+                        etat = "jeu"
+                    elif selection == 1:
+                        en_cours = False
+
+    if etat == "jeu":
+        joueur.mettre_a_jour(plateformes)
+        camera.mettre_a_jour(joueur)
 
     ecran.fill((15, 15, 30))
 
-    for plateforme in plateformes:
+    if etat == "menu":
+        titre = police.render("OBJECTIF LIFE", True, (255, 255, 255))
+        ecran.blit(titre, (LARGEUR//2 - titre.get_width()//2, 100))
+
+        for i, texte in enumerate(options):
+            couleur = (255, 255, 255)
+            if i == selection:
+                couleur = (220, 80, 120)
+
+            rendu = police.render(texte, True, couleur)
+            ecran.blit(rendu, (LARGEUR//2 - rendu.get_width()//2, 200 + i*60))
+
+    elif etat == "jeu":
+        for plateforme in plateformes:
+            pygame.draw.rect(
+                ecran,
+                (90, 90, 120),
+                pygame.Rect(
+                    plateforme.x - camera.decalage_x,
+                    plateforme.y - camera.decalage_y,
+                    plateforme.width,
+                    plateforme.height
+                )
+            )
+
         pygame.draw.rect(
             ecran,
-            (90, 90, 120),
+            (220, 80, 120),
             pygame.Rect(
-                plateforme.x - camera.decalage_x,
-                plateforme.y - camera.decalage_y,
-                plateforme.width,
-                plateforme.height
+                joueur.rectangle.x - camera.decalage_x,
+                joueur.rectangle.y - camera.decalage_y,
+                joueur.rectangle.width,
+                joueur.rectangle.height
             )
         )
-
-    pygame.draw.rect(
-        ecran,
-        (220, 80, 120),
-        pygame.Rect(
-            joueur.rectangle.x - camera.decalage_x,
-            joueur.rectangle.y - camera.decalage_y,
-            joueur.rectangle.width,
-            joueur.rectangle.height
-        )
-    )
 
     pygame.display.flip()
 
