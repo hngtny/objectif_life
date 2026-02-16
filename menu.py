@@ -5,12 +5,16 @@ LARGEUR, HAUTEUR = 800, 480
 class Menu:
     def __init__(self, ecran):
         self.ecran = ecran
-        self.police = pygame.font.SysFont("assets/Pixelify_Sans/PixelifySans-Bold.ttf", 40)
+        self.police = pygame.font.Font("assets/fonts/Pixelify_Sans/PixelifySans-Regular.ttf", 70)
         self.selection = 0
         self.options = ["Nouvelle Partie", "Quitter"]
 
     def gerer_evenement(self, evenement):
         if evenement.type == pygame.KEYDOWN:
+
+            if evenement.key == pygame.K_ESCAPE:
+                return "quitter"
+
             if evenement.key == pygame.K_UP:
                 self.selection = (self.selection - 1) % len(self.options)
 
