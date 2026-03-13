@@ -26,6 +26,7 @@ class Joueur:
             )
             for i in range(1, 9)
         ]
+        self.stand = pygame.transform.scale(pygame.image.load(f"Sprite/stand.png").convert_alpha(),(50,50))
         self.sprites_gauche = [
             pygame.transform.scale(
                 pygame.image.load(f"Sprite/running_left_{i}.png").convert_alpha(),
@@ -153,13 +154,38 @@ class Jeu:
     def nouvelle_partie(self):
         self.joueur = Joueur(100, 300)
         self.plateformes = [
-            pygame.Rect(0, 420, 2000, 60),
-            pygame.Rect(300, 340, 120, 20),
-            pygame.Rect(550, 280, 120, 20),
-            pygame.Rect(800, 220, 120, 20),
+            pygame.Rect(0, 420, 8000, 60),
+
+            pygame.Rect(200, 360, 120, 180),
+            pygame.Rect(350, 320, 120, 20),
+            pygame.Rect(500, 80, 120, 20),
+            pygame.Rect(650, 240, 120, 20),
+            pygame.Rect(820, 30, 120, 180),
+            pygame.Rect(980, 60, 120, 20),
+            pygame.Rect(1150, 220, 120, 20),
+            pygame.Rect(1320, 280, 120, 20),
+            pygame.Rect(1480, 340, 120, 20),
+            pygame.Rect(1650, 300, 120, 180),
+            pygame.Rect(1820, 260, 120, 20),
+            pygame.Rect(2000, 20, 120, 20),
+            pygame.Rect(2170, 180, 120, 20),
+            pygame.Rect(2350, 240, 120, 180),
+            pygame.Rect(2520, 300, 120, 20),
+            pygame.Rect(2700, 260, 120, 20),
+            pygame.Rect(2880, 220, 120, 20),
+
+            pygame.Rect(3100, 35, 120, 180),
+            pygame.Rect(3250, 310, 120, 20),
+            pygame.Rect(3400, 70, 120, 20),
+            pygame.Rect(3550, 230, 120, 20),
+
             pygame.Rect(1000, 260, 20, 200),
             pygame.Rect(1120, 260, 20, 200),
-            pygame.Rect(1000, 260, 120, 20)
+            pygame.Rect(1000, 260, 120, 20),
+
+            pygame.Rect(3700, 300, 120, 20),
+            pygame.Rect(3850, 250, 120, 20),
+            pygame.Rect(4000, 200, 120, 20),
         ]
 
     def mettre_a_jour(self):
@@ -186,7 +212,7 @@ class Jeu:
         elif self.joueur.vitesse_x > 0:
             sprite = self.joueur.sprites_droite[self.joueur.frame]
         else:
-            sprite = self.joueur.sprites_droite[0]
+            sprite = self.joueur.stand
 
         self.ecran.blit(
             sprite,
