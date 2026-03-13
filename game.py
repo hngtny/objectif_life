@@ -19,13 +19,23 @@ DIRECTIONS_DASH = [
 
 class Joueur:
     def __init__(self, x, y):
+        self.sprites_droite = [
+            pygame.transform.scale(
+                pygame.image.load(f"Sprite/running_right_{i}.png").convert_alpha(),
+                (50, 50)
+            )
+            for i in range(1, 9)
+        ]
         self.sprites_gauche = [
-            pygame.image.load(f"Sprite/running_left_{i}.png").convert_alpha()
+            pygame.transform.scale(
+                pygame.image.load(f"Sprite/running_left_{i}.png").convert_alpha(),
+                (50, 50)
+            )
             for i in range(1, 9)
         ]
         self.frame = 0
         self.timer_animation = 0
-        self.rectangle = pygame.Rect(x, y, 32, 32)
+        self.rectangle = pygame.Rect(x, y, 50, 50)
         self.vitesse_x = 0
         self.vitesse_y = 0
         self.au_sol = False
@@ -114,7 +124,8 @@ class Joueur:
 
         if self.sur_mur and self.vitesse_y > 0:
             self.vitesse_y *= GLISSE_MUR
-        if self.vitesse_x < 0:
+
+        if self.vitesse_x != 0:
             self.timer_animation += 1
             if self.timer_animation > 5:
                 self.frame = (self.frame + 1) % 8
@@ -170,7 +181,12 @@ class Jeu:
                 )
             )
 
-        sprite = self.joueur.sprites_gauche[self.joueur.frame]
+        if self.joueur.vitesse_x < 0:
+            sprite = self.joueur.sprites_gauche[self.joueur.frame]
+        elif self.joueur.vitesse_x > 0:
+            sprite = self.joueur.sprites_droite[self.joueur.frame]
+        else:
+            sprite = self.joueur.sprites_droite[0]
 
         self.ecran.blit(
             sprite,
