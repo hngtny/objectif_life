@@ -1,11 +1,13 @@
 import pygame
+from pygame import FULLSCREEN
+
 from menu import Menu
 from game import Jeu
 
 pygame.init()
 
 LARGEUR, HAUTEUR = 800, 480
-ecran = pygame.display.set_mode((LARGEUR, HAUTEUR))
+ecran = pygame.display.set_mode((LARGEUR, HAUTEUR),FULLSCREEN)
 logo = pygame.image.load('assets/images/objectif life logo.png')
 pygame.display.set_icon(logo)
 pygame.display.set_caption("Objectif Life")
