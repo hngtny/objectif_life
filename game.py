@@ -194,7 +194,6 @@ class Jeu:
 
     def dessiner(self):
         self.ecran.fill((15, 15, 30))
-
         for plateforme in self.plateformes:
             pygame.draw.rect(
                 self.ecran,
