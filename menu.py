@@ -1,7 +1,7 @@
 import pygame
 
 LARGEUR, HAUTEUR = 1920, 1080
-
+fond = pygame.transform.scale(pygame.image.load('assets/images/background_menu.png'),(LARGEUR, HAUTEUR))
 class Menu:
     def __init__(self, ecran):
         self.ecran = ecran
@@ -30,7 +30,7 @@ class Menu:
         return None
 
     def dessiner(self):
-        self.ecran.fill((15, 15, 30))
+        self.ecran.blit(fond,(0,0))
 
         titre = self.police.render("OBJECTIF LIFE", True, (255, 255, 255))
         self.ecran.blit(titre, (LARGEUR//2 - titre.get_width()//2, 400))
