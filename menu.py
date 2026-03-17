@@ -5,7 +5,7 @@ fond = pygame.transform.scale(pygame.image.load('assets/images/background_menu.p
 class Menu:
     def __init__(self, ecran):
         self.ecran = ecran
-        self.police = pygame.font.Font("assets/fonts/Pixelify_Sans/PixelifySans-Regular.ttf", 70)
+        self.police = pygame.font.Font("Assets/fonts/Pixelify_Sans/PixelifySans-Regular.ttf", 70)
         self.selection = 0
         self.options = ["Nouvelle Partie", "Quitter"]
 

@@ -1,7 +1,7 @@
 import pygame
 import math
 
-LARGEUR, HAUTEUR = 800, 480
+LARGEUR, HAUTEUR = 1920, 1080
 
 GRAVITE = 0.4
 FORCE_SAUT = -10
@@ -45,6 +45,7 @@ class Joueur:
         self.peut_dasher = True
         self.en_dash = False
         self.temps_dash = 0
+        self.background = pygame.transform.scale(pygame.image.load(f"Assets/images/Background_jeu.png").convert_alpha(),(LARGEUR, HAUTEUR))
 
     def mettre_a_jour(self, plateformes):
         touches = pygame.key.get_pressed()
@@ -193,7 +194,7 @@ class Jeu:
         self.camera.mettre_a_jour(self.joueur)
 
     def dessiner(self):
-        self.ecran.fill((15, 15, 30))
+        self.ecran.blit(self.joueur.background,(0,0))
         for plateforme in self.plateformes:
             pygame.draw.rect(
                 self.ecran,

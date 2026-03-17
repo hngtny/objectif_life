@@ -8,7 +8,7 @@ pygame.init()
 
 LARGEUR, HAUTEUR = 1920, 1080
 ecran = pygame.display.set_mode((LARGEUR, HAUTEUR))
-logo = pygame.image.load('assets/images/objectif life logo.png')
+logo = pygame.image.load('Assets/images/objectif life logo.png')
 pygame.display.set_icon(logo)
 pygame.display.set_caption("Objectif Life")
 
