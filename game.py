@@ -45,7 +45,7 @@ class Joueur:
         self.peut_dasher = True
         self.en_dash = False
         self.temps_dash = 0
-        self.background = pygame.transform.scale(pygame.image.load(f"Assets/images/Background_jeu.png").convert_alpha(),(LARGEUR, HAUTEUR))
+        self.background = pygame.transform.scale(pygame.image.load(f"Assets/images/background_jeu.png").convert_alpha(),(LARGEUR, HAUTEUR))
 
     def mettre_a_jour(self, plateformes):
         touches = pygame.key.get_pressed()
