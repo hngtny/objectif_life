@@ -17,6 +17,17 @@ DIRECTIONS_DASH = [
     (-1, 1), (1, 1)
 ]
 
+OFFSETS = {
+    "Long":           40,
+    "long_cailloux":  40,
+    "long_detruit":   55,
+    "moyen":          40,
+    "moyen_plante":   40,
+    "moyen_trou":     40,
+    "cailloux":       40,
+    "court":          30,
+}
+
 class Joueur:
     def __init__(self, x, y):
         self.sprites_droite = [
@@ -26,7 +37,10 @@ class Joueur:
             )
             for i in range(1, 9)
         ]
-        self.stand = pygame.transform.scale(pygame.image.load(f"Sprite/stand.png").convert_alpha(),(50,50))
+        self.stand = pygame.transform.scale(
+            pygame.image.load("Sprite/stand.png").convert_alpha(),
+            (50, 50)
+        )
         self.sprites_gauche = [
             pygame.transform.scale(
                 pygame.image.load(f"Sprite/running_left_{i}.png").convert_alpha(),
@@ -45,7 +59,10 @@ class Joueur:
         self.peut_dasher = True
         self.en_dash = False
         self.temps_dash = 0
-        self.background = pygame.transform.scale(pygame.image.load(f"Assets/images/background_jeu.png").convert_alpha(),(LARGEUR, HAUTEUR))
+        self.background = pygame.transform.scale(
+            pygame.image.load("Assets/images/Background_jeu.png").convert_alpha(),
+            (LARGEUR, HAUTEUR)
+        )
 
     def mettre_a_jour(self, plateformes):
         touches = pygame.key.get_pressed()
@@ -99,29 +116,31 @@ class Joueur:
         self.rectangle.x += self.vitesse_x
         self.sur_mur = False
 
-        for plateforme in plateformes:
-            if self.rectangle.colliderect(plateforme):
+        for p in plateformes:
+            rect = p["rect"]
+            if self.rectangle.colliderect(rect):
                 if self.vitesse_x > 0:
-                    self.rectangle.right = plateforme.left
+                    self.rectangle.right = rect.left
                     self.sur_mur = True
                     self.direction_mur = 1
                 elif self.vitesse_x < 0:
-                    self.rectangle.left = plateforme.right
+                    self.rectangle.left = rect.right
                     self.sur_mur = True
                     self.direction_mur = -1
 
         self.rectangle.y += self.vitesse_y
         self.au_sol = False
 
-        for plateforme in plateformes:
-            if self.rectangle.colliderect(plateforme):
+        for p in plateformes:
+            rect = p["rect"]
+            if self.rectangle.colliderect(rect):
                 if self.vitesse_y > 0:
-                    self.rectangle.bottom = plateforme.top
+                    self.rectangle.bottom = rect.top
                     self.vitesse_y = 0
                     self.au_sol = True
                     self.peut_dasher = True
                 elif self.vitesse_y < 0:
-                    self.rectangle.top = plateforme.bottom
+                    self.rectangle.top = rect.bottom
                     self.vitesse_y = 0
 
         if self.sur_mur and self.vitesse_y > 0:
@@ -134,6 +153,7 @@ class Joueur:
                 self.timer_animation = 0
         else:
             self.frame = 0
+
 
 class Camera:
     def __init__(self):
@@ -152,59 +172,79 @@ class Jeu:
         self.joueur = None
         self.plateformes = []
 
+        facteur = 0.5
+
+        def charge(nom):
+            img = pygame.image.load(f"Assets/images/{nom}.png").convert_alpha()
+            w, h = img.get_size()
+            img = pygame.transform.scale(img, (int(w * facteur), int(h * facteur)))
+            return img, OFFSETS[nom]
+
+        self.img_cailloux,       self.off_cailloux       = charge("cailloux")
+        self.img_court,          self.off_court          = charge("court")
+        self.img_long,           self.off_long           = charge("Long")
+        self.img_long_cailloux,  self.off_long_cailloux  = charge("long_cailloux")
+        self.img_long_detruit,   self.off_long_detruit   = charge("long_detruit")
+        self.img_moyen,          self.off_moyen          = charge("moyen")
+        self.img_moyen_plante,   self.off_moyen_plante   = charge("moyen_plante")
+        self.img_moyen_trou,     self.off_moyen_trou     = charge("moyen_trou")
+
+    def creer_plateforme(self, x, y, image, offset_y):
+        rect = image.get_rect(topleft=(x, y + offset_y))
+        return {"rect": rect, "image": image, "offset_y": offset_y}
+
     def nouvelle_partie(self):
-        self.joueur = Joueur(100, 300)
-        self.plateformes = [
-            pygame.Rect(0, 420, 8000, 60),
+        self.joueur = Joueur(100, 350)
+        self.plateformes = []
 
-            pygame.Rect(200, 360, 120, 180),
-            pygame.Rect(350, 320, 120, 20),
-            pygame.Rect(500, 80, 120, 20),
-            pygame.Rect(650, 240, 120, 20),
-            pygame.Rect(820, 30, 120, 180),
-            pygame.Rect(980, 60, 120, 20),
-            pygame.Rect(1150, 220, 120, 20),
-            pygame.Rect(1320, 280, 120, 20),
-            pygame.Rect(1480, 340, 120, 20),
-            pygame.Rect(1650, 300, 120, 180),
-            pygame.Rect(1820, 260, 120, 20),
-            pygame.Rect(2000, 20, 120, 20),
-            pygame.Rect(2170, 180, 120, 20),
-            pygame.Rect(2350, 240, 120, 180),
-            pygame.Rect(2520, 300, 120, 20),
-            pygame.Rect(2700, 260, 120, 20),
-            pygame.Rect(2880, 220, 120, 20),
-
-            pygame.Rect(3100, 35, 120, 180),
-            pygame.Rect(3250, 310, 120, 20),
-            pygame.Rect(3400, 70, 120, 20),
-            pygame.Rect(3550, 230, 120, 20),
-
-            pygame.Rect(1000, 260, 20, 200),
-            pygame.Rect(1120, 260, 20, 200),
-            pygame.Rect(1000, 260, 120, 20),
-
-            pygame.Rect(3700, 300, 120, 20),
-            pygame.Rect(3850, 250, 120, 20),
-            pygame.Rect(4000, 200, 120, 20),
-        ]
+        self.plateformes.append(self.creer_plateforme(0,    420, self.img_long,           self.off_long))
+        self.plateformes.append(self.creer_plateforme(200,  360, self.img_moyen,          self.off_moyen))
+        self.plateformes.append(self.creer_plateforme(350,  320, self.img_court,          self.off_court))
+        self.plateformes.append(self.creer_plateforme(650,  240, self.img_moyen_plante,   self.off_moyen_plante))
+        self.plateformes.append(self.creer_plateforme(820,  30,  self.img_long_cailloux,  self.off_long_cailloux))
+        self.plateformes.append(self.creer_plateforme(1150, 220, self.img_moyen_trou,     self.off_moyen_trou))
+        self.plateformes.append(self.creer_plateforme(1320, 280, self.img_moyen,          self.off_moyen))
+        self.plateformes.append(self.creer_plateforme(1480, 340, self.img_court,          self.off_court))
+        self.plateformes.append(self.creer_plateforme(1650, 300, self.img_long_detruit,   self.off_long_detruit))
+        self.plateformes.append(self.creer_plateforme(1820, 260, self.img_court,          self.off_court))
+        self.plateformes.append(self.creer_plateforme(2170, 180, self.img_moyen,          self.off_moyen))
+        self.plateformes.append(self.creer_plateforme(2520, 300, self.img_court,          self.off_court))
+        self.plateformes.append(self.creer_plateforme(2700, 260, self.img_moyen_plante,   self.off_moyen_plante))
+        self.plateformes.append(self.creer_plateforme(2880, 220, self.img_moyen_trou,     self.off_moyen_trou))
+        self.plateformes.append(self.creer_plateforme(3100, 35,  self.img_long,           self.off_long))
+        self.plateformes.append(self.creer_plateforme(3250, 310, self.img_court,          self.off_court))
+        self.plateformes.append(self.creer_plateforme(3550, 230, self.img_moyen,          self.off_moyen))
+        self.plateformes.append(self.creer_plateforme(1000, 260, self.img_cailloux,       self.off_cailloux))
+        self.plateformes.append(self.creer_plateforme(1120, 260, self.img_cailloux,       self.off_cailloux))
+        self.plateformes.append(self.creer_plateforme(1000, 260, self.img_moyen,          self.off_moyen))
+        self.plateformes.append(self.creer_plateforme(3700, 300, self.img_moyen,          self.off_moyen))
+        self.plateformes.append(self.creer_plateforme(3850, 250, self.img_court,          self.off_court))
 
     def mettre_a_jour(self):
         self.joueur.mettre_a_jour(self.plateformes)
         self.camera.mettre_a_jour(self.joueur)
 
     def dessiner(self):
-        self.ecran.blit(self.joueur.background,(0,0))
-        for plateforme in self.plateformes:
+        self.ecran.blit(self.joueur.background, (0, 0))
+
+        for p in self.plateformes:
+            rect = p["rect"]
+            image = p["image"]
+            self.ecran.blit(
+                image,
+                (rect.x - self.camera.decalage_x,
+                 rect.y - self.camera.decalage_y - p["offset_y"])
+            )
             pygame.draw.rect(
                 self.ecran,
-                (90, 90, 120),
+                (255, 0, 0),
                 pygame.Rect(
-                    plateforme.x - self.camera.decalage_x,
-                    plateforme.y - self.camera.decalage_y,
-                    plateforme.width,
-                    plateforme.height
-                )
+                    rect.x - self.camera.decalage_x,
+                    rect.y - self.camera.decalage_y,
+                    rect.width,
+                    rect.height
+                ),
+                2
             )
 
         if self.joueur.vitesse_x < 0:
