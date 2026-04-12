@@ -152,7 +152,7 @@ class Joueur:
             rect = plateforme["rect"]
 
             if self.rectangle.colliderect(rect):
-                if self.vitesse_y > 0 and self.rectangle.bottom - rect.top < 20:
+                if self.vitesse_y >= 0 and self.rectangle.bottom - rect.top < 20:
                     self.rectangle.bottom = rect.top
                     self.vitesse_y = 0
                     self.au_sol = True
@@ -600,9 +600,15 @@ class Jeu:
 
             support = self.joueur.plateforme_support
             if self.joueur.au_sol and support is not None and support["mobile"]:
-                self.joueur.rectangle.x += support["delta_x"]
-                self.joueur.rectangle.y += support["delta_y"]
-                self.joueur.rectangle.bottom = support["rect"].top
+                if support["axe"] == "x":
+                    self.joueur.rectangle.x += support["delta_x"]
+                    self.joueur.rectangle.bottom = support["rect"].top
+
+                elif support["axe"] == "y":
+                    self.joueur.rectangle.y += support["delta_y"]
+                    self.joueur.rectangle.bottom = support["rect"].top
+                    self.joueur.vitesse_y = 0
+                    self.joueur.au_sol = True
 
             self.verifier_collecte_dechets()
             self.verifier_etat_niveau()
