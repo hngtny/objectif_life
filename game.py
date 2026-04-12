@@ -221,7 +221,34 @@ class Jeu:
         self.etat_niveau = "en_cours"
         self.temps_debut_niveau = 0
 
-        facteur = 0.5
+        self.background_1 = pygame.transform.scale(
+            pygame.image.load("Assets/images/background_1.png").convert(),
+            (LARGEUR, HAUTEUR)
+        )
+
+        self.background_2 = pygame.transform.scale(
+            pygame.image.load("Assets/images/background_2.png").convert(),
+            (LARGEUR, HAUTEUR)
+        )
+
+        self.background_3 = pygame.transform.scale(
+            pygame.image.load("Assets/images/background_3.png").convert(),
+            (LARGEUR, HAUTEUR)
+        )
+
+        self.background_final = pygame.transform.scale(
+            pygame.image.load("Assets/images/background_4.png").convert(),
+            (LARGEUR, HAUTEUR)
+        )
+        self.plante_finale = None
+
+        self.img_plante_fin = pygame.transform.scale(
+            pygame.image.load("Assets/images/plante.png").convert_alpha(),
+            (64, 64)
+        )
+        facteur = 0.55
+
+
 
         def charge(nom, path):
             img = pygame.image.load(path).convert_alpha()
@@ -243,6 +270,32 @@ class Jeu:
         )
 
         self.niveaux = self.creer_niveaux()
+
+    def generer_plante_finale(self):
+        self.plante_finale = None
+
+        if self.niveau_index != 9:
+            return
+
+        derniere_plateforme = self.plateformes[-1]
+        x = derniere_plateforme["rect"].centerx - 32
+        y = derniere_plateforme["rect"].top - 64
+
+        self.plante_finale = {
+            "rect": pygame.Rect(x, y, 64, 64),
+            "image": self.img_plante_fin
+        }
+
+    def background_actuel(self):
+        niveau = self.niveau_index + 1
+
+        if niveau <= 3:
+            return self.background_1
+        elif niveau <= 6:
+            return self.background_2
+        elif niveau <= 9:
+            return self.background_3
+        return self.background_final
 
     def creer_niveaux(self):
         return [
@@ -545,15 +598,23 @@ class Jeu:
 
         self.dechets = dechets_restants
 
+    def verifier_plante_finale(self):
+        if self.plante_finale is None:
+            return
+
+        if self.joueur.rectangle.colliderect(self.plante_finale["rect"]):
+            self.plante_finale = None
+            self.etat_niveau = "termine"
+
     def lancer_niveau(self, index):
         self.niveau_index = index
         self.etat_niveau = "en_cours"
         self.score = 0
 
-        self.joueur = Joueur(SPAWN_X, SPAWN_Y)
-
         self.charger_plateformes_niveau()
+        self.joueur = Joueur(SPAWN_X, SPAWN_Y)
         self.generer_dechets()
+        self.generer_plante_finale()
 
         self.camera.mettre_a_jour(self.joueur)
         self.temps_debut_niveau = pygame.time.get_ticks()
@@ -576,11 +637,13 @@ class Jeu:
             self.respawn_joueur()
             return
 
+        if self.niveau_index == 9:
+            if self.temps_restant() <= 0:
+                self.etat_niveau = "perdu"
+            return
+
         if self.score >= 5:
-            if self.niveau_index == len(self.niveaux) - 1:
-                self.etat_niveau = "termine"
-            else:
-                self.etat_niveau = "gagne"
+            self.etat_niveau = "gagne"
         elif self.temps_restant() <= 0:
             self.etat_niveau = "perdu"
 
@@ -603,7 +666,6 @@ class Jeu:
                 if support["axe"] == "x":
                     self.joueur.rectangle.x += support["delta_x"]
                     self.joueur.rectangle.bottom = support["rect"].top
-
                 elif support["axe"] == "y":
                     self.joueur.rectangle.y += support["delta_y"]
                     self.joueur.rectangle.bottom = support["rect"].top
@@ -611,12 +673,13 @@ class Jeu:
                     self.joueur.au_sol = True
 
             self.verifier_collecte_dechets()
+            self.verifier_plante_finale()
             self.verifier_etat_niveau()
 
         self.camera.mettre_a_jour(self.joueur)
 
     def dessiner_background(self):
-        self.ecran.blit(self.joueur.background, (0, 0))
+        self.ecran.blit(self.background_actuel(), (0, 0))
 
     def dessiner_plateformes(self):
         for plateforme in self.plateformes:
@@ -627,6 +690,14 @@ class Jeu:
             x_affiche = rect.x - self.camera.decalage_x
             y_affiche = rect.y - offset_y - self.camera.decalage_y
             self.ecran.blit(image, (x_affiche, y_affiche))
+
+    def dessiner_plante_finale(self):
+        if self.plante_finale is None:
+            return
+
+        x_affiche = self.plante_finale["rect"].x - self.camera.decalage_x
+        y_affiche = self.plante_finale["rect"].y - self.camera.decalage_y
+        self.ecran.blit(self.plante_finale["image"], (x_affiche, y_affiche))
 
     def dessiner_dechets(self):
         for dechet in self.dechets:
@@ -720,3 +791,4 @@ class Jeu:
         self.dessiner_joueur()
         self.dessiner_hud()
         self.dessiner_etat_niveau()
+        self.dessiner_plante_finale()
