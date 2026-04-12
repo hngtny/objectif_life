@@ -3,7 +3,8 @@ import math
 import random
 
 LARGEUR, HAUTEUR = 1920, 1080
-
+SPAWN_X = -140
+SPAWN_Y = 945
 GRAVITE = 0.4
 FORCE_SAUT = -10
 VITESSE = 4
@@ -30,7 +31,6 @@ OFFSETS = {
     "moyen_trou": 40,
     "court": 30,
 }
-
 
 class Joueur:
     def __init__(self, x, y):
@@ -152,14 +152,14 @@ class Joueur:
             rect = plateforme["rect"]
 
             if self.rectangle.colliderect(rect):
-                if self.vitesse_y > 0:
+                if self.vitesse_y > 0 and self.rectangle.bottom - rect.top < 20:
                     self.rectangle.bottom = rect.top
                     self.vitesse_y = 0
                     self.au_sol = True
                     self.peut_dasher = True
                     self.plateforme_support = plateforme
 
-                elif self.vitesse_y < 0:
+                elif self.vitesse_y < 0 and rect.bottom - self.rectangle.top < 20:
                     self.rectangle.top = rect.bottom
                     self.vitesse_y = 0
 
@@ -441,6 +441,10 @@ class Jeu:
             "points": 1
         }
 
+    def respawn_joueur(self):
+        self.joueur = Joueur(SPAWN_X, SPAWN_Y)
+        self.camera.mettre_a_jour(self.joueur)
+
     def charger_plateformes_niveau(self):
         self.plateformes = []
         data = self.niveaux[self.niveau_index]["plateformes"]
@@ -464,8 +468,6 @@ class Jeu:
         self.dechets = []
 
         plateformes_disponibles = self.plateformes[1:]
-        if len(plateformes_disponibles) == 0:
-            raise ValueError("Aucune plateforme disponible pour placer les déchets.")
 
         emplacements = []
 
@@ -487,14 +489,9 @@ class Jeu:
                         x = rect.x + marge + i * (largeur_disponible // max(1, nb_slots - 1))
                     emplacements.append((x, y, plateforme))
 
-        if len(emplacements) < 5:
-            raise ValueError("Pas assez d'emplacements pour placer 5 déchets.")
-
         derniere_plateforme = self.plateformes[-1]
         emplacements_fin = [e for e in emplacements if e[2] == derniere_plateforme]
 
-        if len(emplacements_fin) == 0:
-            raise ValueError("Impossible de placer un déchet sur la dernière plateforme.")
 
         x_fin, y_fin, _ = random.choice(emplacements_fin)
         self.dechets.append(self.creer_dechet(x_fin, y_fin))
@@ -517,23 +514,25 @@ class Jeu:
             if not p["mobile"]:
                 continue
 
+            ancien_x = p["rect"].x
+            ancien_y = p["rect"].y
+
             if p["axe"] == "x":
                 p["rect"].x += p["vitesse"]
-                p["delta_x"] = p["vitesse"]
 
                 if p["rect"].x <= p["min"] or p["rect"].x >= p["max"]:
                     p["vitesse"] *= -1
-                    p["rect"].x += p["vitesse"]
-                    p["delta_x"] = p["vitesse"]
+                    p["rect"].x = max(p["min"], min(p["rect"].x, p["max"]))
 
             elif p["axe"] == "y":
                 p["rect"].y += p["vitesse"]
-                p["delta_y"] = p["vitesse"]
 
                 if p["rect"].y <= p["min"] or p["rect"].y >= p["max"]:
                     p["vitesse"] *= -1
-                    p["rect"].y += p["vitesse"]
-                    p["delta_y"] = p["vitesse"]
+                    p["rect"].y = max(p["min"], min(p["rect"].y, p["max"]))
+
+            p["delta_x"] = p["rect"].x - ancien_x
+            p["delta_y"] = p["rect"].y - ancien_y
 
     def verifier_collecte_dechets(self):
         dechets_restants = []
@@ -551,16 +550,10 @@ class Jeu:
         self.etat_niveau = "en_cours"
         self.score = 0
 
-        self.joueur = Joueur(-140, 930)
+        self.joueur = Joueur(SPAWN_X, SPAWN_Y)
 
         self.charger_plateformes_niveau()
         self.generer_dechets()
-
-        if len(self.dechets) != 5:
-            raise ValueError("Le niveau doit contenir exactement 5 déchets.")
-
-        if sum(dechet["points"] for dechet in self.dechets) != 5:
-            raise ValueError("Le total des points du niveau doit être exactement 5.")
 
         self.camera.mettre_a_jour(self.joueur)
         self.temps_debut_niveau = pygame.time.get_ticks()
@@ -580,7 +573,7 @@ class Jeu:
             return
 
         if self.joueur.rectangle.y > 1200:
-            self.lancer_niveau(self.niveau_index)
+            self.respawn_joueur()
             return
 
         if self.score >= 5:
@@ -605,9 +598,11 @@ class Jeu:
             self.mettre_a_jour_plateformes()
             self.joueur.mettre_a_jour(self.plateformes)
 
-            if self.joueur.au_sol and self.joueur.plateforme_support is not None:
-                self.joueur.rectangle.x += self.joueur.plateforme_support["delta_x"]
-                self.joueur.rectangle.y += self.joueur.plateforme_support["delta_y"]
+            support = self.joueur.plateforme_support
+            if self.joueur.au_sol and support is not None and support["mobile"]:
+                self.joueur.rectangle.x += support["delta_x"]
+                self.joueur.rectangle.y += support["delta_y"]
+                self.joueur.rectangle.bottom = support["rect"].top
 
             self.verifier_collecte_dechets()
             self.verifier_etat_niveau()
