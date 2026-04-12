@@ -1,6 +1,4 @@
 import pygame
-from pygame import FULLSCREEN
-
 from menu import Menu
 from game import Jeu
 
@@ -8,6 +6,7 @@ pygame.init()
 
 LARGEUR, HAUTEUR = 1920, 1080
 ecran = pygame.display.set_mode((LARGEUR, HAUTEUR))
+
 logo = pygame.image.load('Assets/images/objectif life logo.png')
 pygame.display.set_icon(logo)
 pygame.display.set_caption("Objectif Life")
@@ -29,9 +28,11 @@ while en_cours:
 
         if etat == "menu":
             action = menu.gerer_evenement(evenement)
+
             if action == "jouer":
                 jeu.nouvelle_partie()
                 etat = "jeu"
+
             elif action == "quitter":
                 en_cours = False
 
@@ -39,6 +40,9 @@ while en_cours:
             if evenement.type == pygame.KEYDOWN:
                 if evenement.key == pygame.K_ESCAPE:
                     etat = "menu"
+
+            if jeu.etat_niveau != "en_cours":
+                jeu.gerer_evenements_niveau(evenement)
 
     if etat == "menu":
         menu.dessiner()

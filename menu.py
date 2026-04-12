@@ -1,7 +1,11 @@
 import pygame
 
 LARGEUR, HAUTEUR = 1920, 1080
-fond = pygame.transform.scale(pygame.image.load('assets/images/background_menu.png'),(LARGEUR, HAUTEUR))
+fond = pygame.transform.scale(
+    pygame.image.load('assets/images/background_menu.png'),
+    (LARGEUR, HAUTEUR)
+)
+
 class Menu:
     def __init__(self, ecran):
         self.ecran = ecran
@@ -11,7 +15,6 @@ class Menu:
 
     def gerer_evenement(self, evenement):
         if evenement.type == pygame.KEYDOWN:
-
             if evenement.key == pygame.K_ESCAPE:
                 return "quitter"
 
@@ -30,10 +33,10 @@ class Menu:
         return None
 
     def dessiner(self):
-        self.ecran.blit(fond,(0,0))
+        self.ecran.blit(fond, (0, 0))
 
         titre = self.police.render("OBJECTIF LIFE", True, (255, 255, 255))
-        self.ecran.blit(titre, (LARGEUR//2 - titre.get_width()//2, 400))
+        self.ecran.blit(titre, (LARGEUR // 2 - titre.get_width() // 2, 400))
 
         for i, texte in enumerate(self.options):
             couleur = (255, 255, 255)
@@ -41,4 +44,4 @@ class Menu:
                 couleur = (220, 80, 120)
 
             rendu = self.police.render(texte, True, couleur)
-            self.ecran.blit(rendu, (LARGEUR//2 - rendu.get_width()//2, 500 + i*60))
+            self.ecran.blit(rendu, (LARGEUR // 2 - rendu.get_width() // 2, 500 + i * 60))
