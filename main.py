@@ -5,7 +5,7 @@ from game import Jeu
 pygame.init()
 
 LARGEUR, HAUTEUR = 1920, 1080
-ecran = pygame.display.set_mode((LARGEUR, HAUTEUR))
+ecran = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
 
 logo = pygame.image.load('Assets/images/objectif life logo.png')
 pygame.display.set_icon(logo)
