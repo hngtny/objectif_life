@@ -57,5 +57,4 @@ while en_cours:
         jeu.dessiner()
 
     pygame.display.flip()
-
 pygame.quit()
