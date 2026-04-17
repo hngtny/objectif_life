@@ -2,7 +2,9 @@ import pygame
 import math
 import random
 
-LARGEUR, HAUTEUR = 1920, 1080
+pygame.init()
+info = pygame.display.Info()
+LARGEUR, HAUTEUR = info.current_w, info.current_h
 SPAWN_X = -140
 SPAWN_Y = 945
 GRAVITE = 0.4

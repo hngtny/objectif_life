@@ -1,6 +1,8 @@
 import pygame
 
-LARGEUR, HAUTEUR = 1920, 1080
+pygame.init()
+info = pygame.display.Info()
+LARGEUR, HAUTEUR = info.current_w, info.current_h
 fond = pygame.transform.scale(
     pygame.image.load('assets/images/background_menu.png'),
     (LARGEUR, HAUTEUR)
