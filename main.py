@@ -20,7 +20,7 @@ menu = Menu(ecran)
 jeu = Jeu(ecran)
 
 pygame.mixer.init()
-pygame.mixer.music.load("Assets/Song.mp3")
+pygame.mixer.music.load("Assets/songs/Song.mp3")
 pygame.mixer.music.set_volume(0.5)
 pygame.mixer.music.play(-1)
 
