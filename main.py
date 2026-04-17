@@ -20,13 +20,13 @@ def changer_musique(chemin_fichier):
     pygame.mixer.music.play(-1, fade_ms=2000)
 
 etat = "menu"
-changer_musique("Assets/songs/menu.mp3")
+
 
 menu = Menu(ecran)
 jeu = Jeu(ecran)
 
 pygame.mixer.init()
-pygame.mixer.music.load("Assets/songs/Song.mp3")
+pygame.mixer.music.load("Assets/songs/menu.mp3")
 pygame.mixer.music.set_volume(0.5)
 pygame.mixer.music.play(-1)
 
@@ -40,7 +40,7 @@ while en_cours:
 
         if etat == "menu":
             action = menu.gerer_evenement(evenement)
-            changer_musique("Assets/songs/menu.mp3")
+
 
             if action == "jouer":
                 jeu.nouvelle_partie()
@@ -54,6 +54,7 @@ while en_cours:
             if evenement.type == pygame.KEYDOWN:
                 if evenement.key == pygame.K_ESCAPE:
                     etat = "menu"
+                    changer_musique("Assets/songs/menu.mp3")
 
             if jeu.etat_niveau != "en_cours":
                 jeu.gerer_evenements_niveau(evenement)

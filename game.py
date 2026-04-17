@@ -244,6 +244,11 @@ class Jeu:
         )
         self.plante_finale = None
 
+        self.plant_logo = pygame.transform.scale(
+            pygame.image.load("Assets/images/plante.png").convert_alpha(),
+            (100, 100)
+        )
+
         self.img_plante_fin = pygame.transform.scale(
             pygame.image.load("Assets/images/plante.png").convert_alpha(),
             (64, 64)
@@ -298,6 +303,11 @@ class Jeu:
         elif niveau <= 9:
             return self.background_3
         return self.background_final
+
+    def dessiner_plante_logo(self):
+        x = LARGEUR - self.plant_logo.get_width() - 20
+        y = HAUTEUR - self.plant_logo.get_height() - 20
+        self.ecran.blit(self.plant_logo, (x, y))
 
     def creer_niveaux(self):
         return [
@@ -788,3 +798,4 @@ class Jeu:
         self.dessiner_hud()
         self.dessiner_etat_niveau()
         self.dessiner_plante_finale()
+        self.dessiner_plante_logo()
