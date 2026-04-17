@@ -14,7 +14,13 @@ pygame.display.set_caption("Objectif Life")
 
 horloge = pygame.time.Clock()
 
+def changer_musique(chemin_fichier):
+    pygame.mixer.music.fadeout(1000)
+    pygame.mixer.music.load(chemin_fichier)
+    pygame.mixer.music.play(-1, fade_ms=2000)
+
 etat = "menu"
+changer_musique("Assets/songs/menu.mp3")
 
 menu = Menu(ecran)
 jeu = Jeu(ecran)
@@ -34,10 +40,12 @@ while en_cours:
 
         if etat == "menu":
             action = menu.gerer_evenement(evenement)
+            changer_musique("Assets/songs/menu.mp3")
 
             if action == "jouer":
                 jeu.nouvelle_partie()
                 etat = "jeu"
+                changer_musique("Assets/songs/Song.mp3")
 
             elif action == "quitter":
                 en_cours = False
