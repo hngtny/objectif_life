@@ -215,9 +215,9 @@ class Jeu:
         self.dechets = []
         self.score = 0
 
-        self.font_score = pygame.font.Font(None, 50)
-        self.font_hud = pygame.font.Font(None, 40)
-        self.font_big = pygame.font.Font(None, 80)
+        self.font_score = pygame.font.Font("Assets/fonts/Pixelify_Sans/PixelifySans-Regular.ttf", 50)
+        self.font_hud = pygame.font.Font("Assets/fonts/Pixelify_Sans/PixelifySans-Regular.ttf", 40)
+        self.font_big = pygame.font.Font("Assets/fonts/Pixelify_Sans/PixelifySans-Regular.ttf", 80)
 
         self.niveau_index = 0
         self.etat_niveau = "en_cours"
@@ -727,16 +727,10 @@ class Jeu:
         texte_niveau = self.font_hud.render(
             f"Niveau : {self.niveau_index + 1}/10",
             True,
-            (200, 200, 255)
+            (255, 255, 255)
         )
         self.ecran.blit(texte_niveau, (30, 140))
 
-        texte_dechets = self.font_hud.render(
-            f"Déchets restants : {len(self.dechets)}",
-            True,
-            (180, 255, 180)
-        )
-        self.ecran.blit(texte_dechets, (30, 190))
 
     def dessiner_etat_niveau(self):
         if self.etat_niveau == "en_cours":

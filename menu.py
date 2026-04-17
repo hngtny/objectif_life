@@ -11,6 +11,7 @@ fond = pygame.transform.scale(
 class Menu:
     def __init__(self, ecran):
         self.ecran = ecran
+        self.police_title = pygame.font.Font("Assets/fonts/Pixelify_Sans/PixelifySans-Bold.ttf", 85)
         self.police = pygame.font.Font("Assets/fonts/Pixelify_Sans/PixelifySans-Regular.ttf", 70)
         self.selection = 0
         self.options = ["Nouvelle Partie", "Quitter"]
@@ -37,13 +38,13 @@ class Menu:
     def dessiner(self):
         self.ecran.blit(fond, (0, 0))
 
-        titre = self.police.render("OBJECTIF LIFE", True, (255, 255, 255))
+        titre = self.police_title.render("OBJECTIF LIFE", True, (77, 46, 12))
         self.ecran.blit(titre, (LARGEUR // 2 - titre.get_width() // 2, 400))
 
         for i, texte in enumerate(self.options):
             couleur = (255, 255, 255)
             if i == self.selection:
-                couleur = (220, 80, 120)
+                couleur = (107, 74, 33)
 
             rendu = self.police.render(texte, True, couleur)
             self.ecran.blit(rendu, (LARGEUR // 2 - rendu.get_width() // 2, 500 + i * 60))
